@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Datacontainer playground</title>
+  <style type="text/css">
+body {
+  padding: 0;
+  margin: 0;
+  font-family: sans-serif;
+}
+#play {
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  color: #fff;
+  background-color: #232A31;
+  background-image: -webkit-linear-gradient(352deg, #322641, #2A333C);
+  background-image: -moz-linear-gradient(352deg, #322641, #2A333C);
+  background-image: -o-linear-gradient(352deg, #322641, #2A333C);
+  background-image: -ms-linear-gradient(352deg, #322641, #2A333C);
+  background-image: linear-gradient(352deg, #322641, #2A333C);
+}
+#response {
+  margin-left: 50%;
+  width: 50%
+}
+
+textarea, input {
+  background: #EDF2F5;
+  outline: none;
+  font-size: 15px;
+  font-family: "Lucida Console", Monaco, monospace;
+}
+
+textarea {
+  padding: 10px;
+  border: none;
+  width: 95%;
+}
+
+input {
+  width: 70%;
+  padding: 10px
+}
+
+#input {
+  height: 175px;
+}
+#db {
+  height: 270px;
+}
+#output {
+  height: 412px;
+}
+
+#address {
+  border: 3px solid #7DA1BF;
+  margin-bottom: 10px;
+}
+
+.inner {
+  padding: 50px;
+}
+
+.hidden {
+  display: none;
+}
+
+#send {
+  padding: 13px 30px;
+  margin: 10px;
+  margin-bottom: 15px;
+  border: 0;
+  background-color: #FFF85F;
+  border-bottom: 3px solid #CDBD1E;
+  background-position: left center;
+  font-size: 15px;
+}
+  </style>
+</head>
+<body>
+
+<section id="play">
+  <div class='inner'>
+  <h4>Request     <select id="method">
+      <option value="get">GET (.get)</option>
+      <option value="set">PUT (.set)</option>
+      <option value="update">PATCH (.update)</option>
+    </select></h4>
+    <input id="address" type="text" value="/friends"></input>
+    <button id="send">send</button>
+    <textarea id="input" class="hidden">{
+  "hello": "world"
+}</textarea>
+    <h4>Your database</h4>
+    <textarea id="db">{
+  "name": "Nicola",
+  "friends": [{
+    "name": "Gio"
+  }, {
+    "name": "Vir"
+  }]
+}</textarea>
+  </div>
+</section>
+
+<section id="response">
+  <div class='inner'>
+    <h1>Response</h1>
+    <textarea id="output">{
+  "contains": [
+    "0",
+    "1"
+  ]
+}</textarea>
+  </div>  
+</section>
+
+<script type="text/javascript" src='bundle.js'></script>
+<script type="text/javascript">
+  var select = document.getElementById('method')
+  select.addEventListener('change', function (selected) {
+    var chosen = selected.target.value
+    console.log(chosen)
+    if (chosen != 'get') {
+      document.getElementById('input')
+        .className = ''
+    } else {
+      document.getElementById('input')
+        .className = 'hidden'
+    }
+  })
+
+  var send = document.getElementById('send')
+  send.addEventListener('click', function () {
+    var data
+    try {
+      data = JSON.parse(document.getElementById('db').value)
+    } catch (e) {
+      alert("failed to parse your db :(")
+      return
+    }
+    var datacontainer = DataContainer(data)
+    var method = document.getElementById('method').value
+    var url = document.getElementById('address').value
+
+    console.log('method', url, method)
+
+    if (method === 'get') {
+      console.log(url)
+      datacontainer.get(url, function (err, data) {
+        if (err) alert(err)
+        document.getElementById('output').value = JSON.stringify(data, null, 2)
+      })
+    } else {
+      var json
+      try {
+        json = JSON.parse(document.getElementById('input').value)
+      } catch (e) {
+        alert("failed to parse your input :(")
+        return
+      }
+      datacontainer[method](url, json, function (err) {
+        if (err) alert(err)
+        datacontainer.get(url, function (err, data) {
+          if (err) alert(err)
+          document.getElementById('output').value = JSON.stringify(data, null, 2)
+          document.getElementById('db').value = JSON.stringify(datacontainer.data, null, 2)
+        })
+      })
+    }
+  })
+
+</script>
+
+</body>
+</html>

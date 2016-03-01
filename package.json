@@ -1,0 +1,23 @@
+{
+  "name": "datacontainer-playground",
+  "version": "1.0.0",
+  "description": "Interactive playground to learn about datacontainers",
+  "main": "js/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify -e ./ --standalone DataContainer > bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicola/datacontainer-playground"
+  },
+  "author": "Nicola Greco <me@nicola.io> (http://nicolagreco.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nicola/datacontainer-playground/issues"
+  },
+  "homepage": "https://github.com/nicola/datacontainer-playground",
+  "dependencies": {
+    "datacontainer": "^0.1.0"
+  }
+}
